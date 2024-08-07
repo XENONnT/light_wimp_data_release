@@ -1,0 +1,35 @@
+[tool]
+[tool.poetry]
+name = "light_wimp_data_release"
+version = "0.0.0"
+description = "XENONnT Light WIMP paper data release"
+authors = [
+  "XENON Collaboration, 2024"
+]
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Software Development :: Libraries",
+]
+repository = "https://github.com/XENONnT/light_wimp_data_release"
+
+[tool.poetry.dependencies]
+inference_interface = "v0.0.2"
+alea-inference = "v0.2.6"
+blueice = "1.2.0"
+wimprates = "v0.5.0"
+appletree = "v0.5.1"
+multihist = "v0.6.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.8", "setuptools>=61.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 100
+preview = true
