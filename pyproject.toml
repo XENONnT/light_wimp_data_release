@@ -22,7 +22,6 @@ repository = "https://github.com/XENONnT/light_wimp_data_release"
 inference_interface = "v0.0.2"
 alea-inference = "v0.2.6"
 blueice = "1.2.0"
-wimprates = "v0.5.0"
 appletree = "v0.5.1"
 multihist = "v0.6.5"
 
