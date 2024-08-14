@@ -6,7 +6,6 @@ from tqdm.notebook import tqdm
 import importlib.resources
 from scipy.interpolate import RegularGridInterpolator
 from inference_interface import template_to_multihist
-from blueice.utils import arrays_to_grid
 from scipy.interpolate import interp1d
 from appletree.utils import load_json, integrate_midpoint, cumulative_integrate_midpoint
 
@@ -113,7 +112,7 @@ class Template:
         :return: Interpolator
         """
         anchors_array = [BASIS_Ek, LY_SWEEP, QY_SWEEP]
-        anchors_grid = arrays_to_grid(anchors_array)
+        anchors_grid = self.arrays_to_grid(anchors_array)
 
         extra_dims = [3, 3, 3, 3]  # templates dimension
         anchor_scores = np.zeros(list(anchors_grid.shape)[:-1] + extra_dims)
@@ -201,3 +200,10 @@ class Template:
                 yield_model[field]["coordinate_system"], yield_model[field]["map"]
             )
         return yield_model_dict
+    
+    def arrays_to_grid(arrs):
+        """
+        Convert a list of n 1-dim arrays to an n+1-dim. array, 
+        where last dimension denotes coordinate values at point.
+        """
+        return np.stack(np.meshgrid(*arrs, indexing='ij'), axis=-1)
