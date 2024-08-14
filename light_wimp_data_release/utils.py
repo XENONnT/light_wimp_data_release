@@ -189,7 +189,7 @@ class Template:
 
     def format_custom_yield_model(self, yield_model):
         """
-        Format the custom yield model
+        Format the custom yield model. 
         :param yield_model:
         :return:
         """
@@ -199,6 +199,11 @@ class Template:
             yield_model_dict[field] = interp1d(
                 yield_model[field]["coordinate_system"], yield_model[field]["map"]
             )
+            # assert the yield model is between 0 and 10
+            assert np.all(
+                (yield_model_dict[field](yield_model[field]["coordinate_system"]) >= 0)
+                & (yield_model_dict[field](yield_model[field]["coordinate_system"]) <= 10)
+            ), f"Yield model {field} must be between 0 and 10 quanta/keV"
         return yield_model_dict
     
     def arrays_to_grid(self, arrs):
