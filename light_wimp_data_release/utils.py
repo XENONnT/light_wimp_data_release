@@ -201,7 +201,7 @@ class Template:
             )
         return yield_model_dict
     
-    def arrays_to_grid(arrs):
+    def arrays_to_grid(self, arrs):
         """
         Convert a list of n 1-dim arrays to an n+1-dim. array, 
         where last dimension denotes coordinate values at point.
