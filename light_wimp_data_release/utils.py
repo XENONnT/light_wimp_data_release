@@ -205,5 +205,6 @@ class Template:
         """
         Convert a list of n 1-dim arrays to an n+1-dim. array, 
         where last dimension denotes coordinate values at point.
+        :param arrs: list of 1-dim arrays
         """
         return np.stack(np.meshgrid(*arrs, indexing='ij'), axis=-1)
