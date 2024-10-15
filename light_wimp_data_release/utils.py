@@ -1,15 +1,11 @@
 import numpy as np
-import wimprates
-import inference_interface
 import os
-import json
 from pathlib import Path
 from warnings import warn
 from tqdm.notebook import tqdm
 import importlib.resources
 from scipy.interpolate import RegularGridInterpolator
 from inference_interface import template_to_multihist
-from blueice.utils import arrays_to_grid
 from scipy.interpolate import interp1d
 from appletree.utils import load_json, integrate_midpoint, cumulative_integrate_midpoint
 
@@ -116,7 +112,7 @@ class Template:
         :return: Interpolator
         """
         anchors_array = [BASIS_Ek, LY_SWEEP, QY_SWEEP]
-        anchors_grid = arrays_to_grid(anchors_array)
+        anchors_grid = self.arrays_to_grid(anchors_array)
 
         extra_dims = [3, 3, 3, 3]  # templates dimension
         anchor_scores = np.zeros(list(anchors_grid.shape)[:-1] + extra_dims)
@@ -193,7 +189,7 @@ class Template:
 
     def format_custom_yield_model(self, yield_model):
         """
-        Format the custom yield model
+        Format the custom yield model. 
         :param yield_model:
         :return:
         """
@@ -203,4 +199,17 @@ class Template:
             yield_model_dict[field] = interp1d(
                 yield_model[field]["coordinate_system"], yield_model[field]["map"]
             )
+            # assert the yield model is between 0 and 10
+            assert np.all(
+                (yield_model_dict[field](yield_model[field]["coordinate_system"]) >= 0)
+                & (yield_model_dict[field](yield_model[field]["coordinate_system"]) <= 10)
+            ), f"Yield model {field} must be between 0 and 10 quanta/keV"
         return yield_model_dict
+    
+    def arrays_to_grid(self, arrs):
+        """
+        Convert a list of n 1-dim arrays to an n+1-dim. array, 
+        where last dimension denotes coordinate values at point.
+        :param arrs: list of 1-dim arrays
+        """
+        return np.stack(np.meshgrid(*arrs, indexing='ij'), axis=-1)

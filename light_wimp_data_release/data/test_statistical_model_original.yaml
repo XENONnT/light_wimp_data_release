@@ -1,0 +1,296 @@
+parameter_definition:
+  livetime_sr0:
+    nominal_value: 1.174398  # https://github.com/XENONnT/nton/blob/796a516530f8b12b5ba4982c3bb12918d1066622/nton/cevns/configs/b8_discovery/b8_cevns_statistical_model.yaml#L3C30-L3C53
+    ptype: shape
+    fittable: false
+    description: SR0 livetime
+
+  livetime_sr1:
+    nominal_value: 2.342593  # https://github.com/XENONnT/nton/blob/796a516530f8b12b5ba4982c3bb12918d1066622/nton/cevns/configs/b8_discovery/b8_cevns_statistical_model.yaml#L9
+    ptype: shape
+    fittable: false
+    description: SR1 livetime
+
+  wimp_mass:
+    nominal_value: 6
+    ptype: shape
+    fittable: false
+    description: WIMP mass in GeV/c^2
+    blueice_anchors:
+      - 3
+      - 4
+      - 5
+      - 6
+      - 8
+      - 10
+      - 12
+
+  signal_efficiency:
+    nominal_value: 1.0
+    ptype: efficiency
+    uncertainty: 0.25 # B8 WIMP are of same efficiency uncertainty, because 1. similarity in S1 n hit spectrum 2. By definition S2 acc uncertainty is independent of S2 area. 0.25 is from https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:b8:signal_model#expectation
+    relative_uncertainty: true
+    fittable: true
+    fit_limits:
+      - 0.5
+      - 1.5
+    fit_guess: 1.0
+    parameter_interval_bounds:
+      - 0.5
+      - 1.5
+    description: Parameter to account for the uncertain signal expectation given a certain cross-section
+
+  wimp_rate_multiplier:
+    nominal_value: 1.0
+    ptype: rate
+    uncertainty: null # No flux uncertainty. The signal acceptance is considered in signal_efficiency
+    relative_uncertainty: true
+    fit_guess: 1.0
+    fittable: true
+    fit_limits:
+      - 0
+      - 100000
+    parameter_interval_bounds:
+      - 0
+      - 100000
+
+  b8_rate_multiplier:
+    nominal_value: 1.0
+    ptype: rate
+    uncertainty: 0.0381  # Flux uncertainty only. https://doi.org/10.1103/PhysRevC.88.025501 is 0.0381 from SNO.
+    relative_uncertainty: true
+    fit_guess: 1.0
+    fittable: true
+    fit_limits:
+      - 0
+      - 100
+    parameter_interval_bounds:
+      - 0
+      - 100
+
+  ac_sr0_rate_multiplier:
+    nominal_value: 1.0
+    ptype: rate
+    uncertainty: 0.0904 # https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:b8:background_summary#ac_background
+    relative_uncertainty: true
+    fit_guess: 1.0
+    fittable: true
+    fit_limits:
+      - 0
+      - 100
+    parameter_interval_bounds:
+      - 0
+      - 100
+
+  ac_sr1_rate_multiplier:
+    nominal_value: 1.0
+    ptype: rate
+    uncertainty: 0.0576 # https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:b8:background_summary#ac_background
+    relative_uncertainty: true
+    fit_guess: 1.0
+    fittable: true
+    fit_limits:
+      - 0
+      - 100
+    parameter_interval_bounds:
+      - 0
+      - 100
+
+  er_rate_multiplier:
+    nominal_value: 1.0
+    ptype: rate
+    uncertainty: 1.0 # https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:b8:background_summary#er_background
+    relative_uncertainty: true
+    fit_guess: 1.0
+    fittable: true
+    fit_limits:
+      - 0
+      - 100
+    parameter_interval_bounds:
+      - 0
+      - 100
+
+  nr_rate_multiplier:
+    nominal_value: 1.0
+    ptype: rate
+    uncertainty: 0.58 # https://xe1t-wiki.lngs.infn.it/doku.php?id=xenon:xenonnt:b8:background_summary#nr_background
+    relative_uncertainty: true
+    fit_guess: 1.0
+    fittable: true
+    fit_limits:
+      - 0
+      - 100
+    parameter_interval_bounds:
+      - 0
+      - 100
+
+  t_ly:
+    nominal_value: 0
+    ptype: shape
+    uncertainty: 1
+    relative_uncertainty: false
+    fittable: true
+    blueice_anchors:
+      - -3
+      - -2
+      - -1
+      - 0
+      - 1
+      - 2
+      - 3
+    fit_limits:
+      - -3
+      - 3
+    description: Light yield morpher
+
+  t_qy:
+    nominal_value: 0
+    ptype: shape
+    uncertainty: 1
+    relative_uncertainty: false
+    fittable: true
+    blueice_anchors:
+      - -3
+      - -2
+      - -1
+      - 0
+      - 1
+      - 2
+      - 3
+    fit_limits:
+      - -3
+      - 3
+    description: Charge yield morpher
+
+likelihood_config:
+  template_folder: "/home/yuanlq/software/light_wimp_data_release/light_wimp_data_release/data"
+  likelihood_terms:
+    - name: SR0
+      default_source_class: alea.template_source.TemplateSource
+      likelihood_type: blueice.likelihood.BinnedLogLikelihood
+      analysis_space:
+        - "cs2": "90.000000000000 170.161773681641 249.889739990234 500.000000000000"
+        - "s2_shadow_s2_time_shadow": "np.linspace(0, 1, 4)"
+        - "s1_bdt_score": "0.000000000000 0.282301220403 0.498535093000 1.000000000000"
+        - "s2_bdt_score": "0.806955800000 0.883306158412 0.923731456497 1.000000000000"
+      in_events_per_bin: true
+      livetime_parameter: livetime_sr0
+      slice_args: {}
+      sources:
+      - name: wimp
+        histname: template
+        parameters:
+          - signal_efficiency
+          - wimp_rate_multiplier
+          - wimp_mass
+          - t_ly
+          - t_qy
+        named_parameters:
+          - wimp_mass
+          - t_ly
+          - t_qy
+        template_filename: wimp_si/template_XENONnT_sr0_wimp_si_{wimp_mass:d}_cevns_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5
+        apply_efficiency: True
+        efficiency_name: signal_efficiency
+
+      - name: b8
+        histname: template
+        parameters:
+          - signal_efficiency
+          - b8_rate_multiplier
+          - t_ly
+          - t_qy
+        named_parameters:
+          - t_ly
+          - t_qy
+        template_filename: b8/template_XENONnT_sr0_b8_cevns_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5
+        apply_efficiency: True
+        efficiency_name: signal_efficiency
+
+      - name: ac_sr0
+        histname: template
+        parameters:
+          - ac_sr0_rate_multiplier
+        template_filename: ac/template_XENONnT_sr0_ac_cevns.h5
+
+      - name: er
+        histname: template
+        parameters:
+          - er_rate_multiplier
+        template_filename: er/template_XENONnT_sr0_er_cevns.h5
+
+      - name: nr
+        histname: template
+        parameters:
+          - nr_rate_multiplier
+          - t_ly
+          - t_qy
+        named_parameters:
+          - t_ly
+          - t_qy
+        template_filename: rg/template_XENONnT_sr0_rg_cevns_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5
+
+    - name: SR1
+      default_source_class: alea.template_source.TemplateSource
+      likelihood_type: blueice.likelihood.BinnedLogLikelihood
+      analysis_space:
+        - "cs2": "90.000000000000 155.937850952148 232.292022705078 500.000000000000"
+        - "s2_shadow_s2_time_shadow": "np.linspace(0, 1, 4)"
+        - "s1_bdt_score": "0.000000000000 0.278574121795 0.493158321679 1.000000000000"
+        - "s2_bdt_score": "0.775284200000 0.859520047133 0.902943575517 1.000000000000"
+      in_events_per_bin: true
+      livetime_parameter: livetime_sr1
+      slice_args: {}
+      sources:
+      - name: wimp
+        histname: template
+        parameters:
+          - signal_efficiency
+          - wimp_rate_multiplier
+          - wimp_mass
+          - t_ly
+          - t_qy
+        named_parameters:
+          - wimp_mass
+          - t_ly
+          - t_qy
+        template_filename: wimp_si/template_XENONnT_sr1_wimp_si_{wimp_mass:d}_cevns_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5
+        apply_efficiency: True
+        efficiency_name: signal_efficiency
+
+      - name: b8
+        histname: template
+        parameters:
+          - signal_efficiency
+          - b8_rate_multiplier
+          - t_ly
+          - t_qy
+        named_parameters:
+          - t_ly
+          - t_qy
+        template_filename: b8/template_XENONnT_sr1_b8_cevns_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5
+        apply_efficiency: True
+        efficiency_name: signal_efficiency
+
+      - name: ac_sr1
+        histname: template
+        parameters:
+          - ac_sr1_rate_multiplier
+        template_filename: ac/template_XENONnT_sr1_ac_cevns.h5
+
+      - name: er
+        histname: template
+        parameters:
+          - er_rate_multiplier
+        template_filename: er/template_XENONnT_sr1_er_cevns.h5
+
+      - name: nr
+        histname: template
+        parameters:
+          - nr_rate_multiplier
+          - t_ly
+          - t_qy
+        named_parameters:
+          - t_ly
+          - t_qy
+        template_filename: rg/template_XENONnT_sr1_rg_cevns_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5
