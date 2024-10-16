@@ -24,6 +24,40 @@ BASIS_Ek = np.concatenate(
 LY_SWEEP = np.arange(1, 11, 1)
 QY_SWEEP = np.arange(1, 11, 1)
 
+def get_yield(t, lower, median, upper, y_max=9, y_min=1):
+    """
+    Get yield based on yield parameter tly or tqy:
+        yield = median + (upper - median) * t if t >= 0
+        yield = median + (lower - median) * t if t < 0    
+    Truncate the yield to be within y_max and y_min
+    :param t: yield parameter tly or tqy
+    :param lower: lower yield model dict with keys: coordinate_system, map (unit: quanta/keV)
+    :param median: median yield model dict with keys: coordinate_system, map (unit: quanta/keV)
+    :param upper: upper yield model dict with keys: coordinate_system, map (unit: quanta/keV)
+    :param y_max: maximum yield value (unit: quanta/keV)
+    :param y_min: minimum yield value (unit: quanta/keV)
+    :return: yield model dict with keys: coordinate_system, map (unit: quanta/keV)
+    """
+    # Check if the coordinate system is the same
+    assert median['coordinate_system'] == lower['coordinate_system']
+    assert median['coordinate_system'] == upper['coordinate_system']
+    
+    d_down = np.array(median['map']) - np.array(lower['map'])
+    d_up = np.array(upper['map']) - np.array(median['map'])
+    
+    if t >= 0:
+        new_map = median['map'] + d_up * t
+    elif t < 0:
+        new_map = median['map'] + d_down * t
+
+    # Cap the yield by brutal force
+    new_map[new_map>=y_max] = y_max
+    new_map[new_map<=y_min] = y_min
+
+    return {
+        "coordinate_system": list(median['coordinate_system']),
+        "map": list(new_map)
+    }
 
 class Template:
     """
@@ -70,7 +104,7 @@ class Template:
             self.yield_model = self.format_custom_yield_model(yield_model)
 
         results = {}
-        for sr in tqdm(["sr0", "sr1"], desc="SR"):
+        for sr in ["sr0", "sr1"]:
             results[sr] = self._build_template(signal_spectrum, sr)
         return results
 
