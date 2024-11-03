@@ -14,7 +14,7 @@
 | `wimp_si_n_m2` | Templates for Momentum Dependent Dark Matter with $n=-2$, which can also be interpreted as self-interacting dark matter with a light mediator. |
 | `mirror_dm`           | Templates for Mirror Dark Matter (dark oxygen).     |
 | `real_data.pkl` | All real-data events unblinded in the search region of interest after all selections. |
-| `statistical_model_base.yaml` | A base of [alea](https://github.com/XENONnT/alea) statistical model config, which is modified in statistical inference described in [notebook 2](https://github.com/XENONnT/light_wimp_data_release/tree/master/notebooks).  |
+| `statistical_model_base.yaml` | A template of [alea](https://github.com/XENONnT/alea) statistical model config, which is modified to generate new configs in statistical inference described in [notebook 2](https://github.com/XENONnT/light_wimp_data_release/tree/master/notebooks).  |
 
 
 
