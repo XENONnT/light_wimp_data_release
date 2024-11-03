@@ -16,15 +16,13 @@ from alea.models import BlueiceExtendedModel
 
 
 # Real data for SR0 and SR1 unblinding after all selections
-with open(importlib.resources.files("light_wimp_data_release.data") / "real_data.pkl", 'rb') as f:
-    REAL_DATA = pickle.load(f) 
+with open(importlib.resources.files("light_wimp_data_release.data") / "real_data.pkl", "rb") as f:
+    REAL_DATA = pickle.load(f)
 
 E_R_MIN = 0.51  # keV
-E_R_MAX = 5.0   # keV
+E_R_MAX = 5.0  # keV
 SAMPLE_SIZE = int(2e4)
-BASIS_PATH = str(
-    importlib.resources.files("light_wimp_data_release.data.orthonormal_basis")
-)
+BASIS_PATH = str(importlib.resources.files("light_wimp_data_release.data.orthonormal_basis"))
 JSON_PATH = importlib.resources.files("light_wimp_data_release.data") / "signal"
 JSON_PATH = Path(JSON_PATH)
 
@@ -33,10 +31,11 @@ TEMPLATE_PATH = str(importlib.resources.files("light_wimp_data_release.data"))
 BASIS_E_R = np.concatenate(
     [[0.51, 0.6, 0.7, 0.8, 0.9], np.arange(1, 2, 0.25), np.arange(2, 5.5, 0.5)]
 )
-MAX_YIELD = 10 # quanta/keV
+MAX_YIELD = 10  # quanta/keV
 MIN_YIELD = 1  # quanta/keV
-LY_SWEEP = np.arange(MIN_YIELD, MAX_YIELD+1, 1)
-QY_SWEEP = np.arange(MIN_YIELD, MAX_YIELD+1, 1)
+LY_SWEEP = np.arange(MIN_YIELD, MAX_YIELD + 1, 1)
+QY_SWEEP = np.arange(MIN_YIELD, MAX_YIELD + 1, 1)
+
 
 def make_spectrum(er, dr_der):
     """Make spectrum object from 1d arrays of recoil energies and differential rates.
@@ -44,9 +43,13 @@ def make_spectrum(er, dr_der):
     :param dr_der: differential rate in events/keV/tonne/year.
     :return: spectrum object with keys: coordinate_system, coordinate_name, map, rate.
     """
-    assert np.max(er) > E_R_MIN, "Maximum recoil energy must be greater than 0.51 keV, \
+    assert (
+        np.max(er) > E_R_MIN
+    ), "Maximum recoil energy must be greater than 0.51 keV, \
         to overlap with the search ROI."
-    assert np.min(er) < E_R_MAX, "Minimum recoil energy must be less than 5 keV, \
+    assert (
+        np.min(er) < E_R_MAX
+    ), "Minimum recoil energy must be less than 5 keV, \
         to overlap with the search ROI."
     assert len(er) == len(dr_der), "Length of er and dr_der must be the same."
 
@@ -58,23 +61,24 @@ def make_spectrum(er, dr_der):
 
     # Return the spectrum object with the following attributes
     spectrum = {}
-    spectrum['coordinate_system'] = cdf.tolist()
-    spectrum['coordinate_name'] = 'cdf'
-    spectrum['map'] = er.tolist()
-    spectrum['rate'] = nominal_rate
-    spectrum['annotation'] = {
-        'coordinate_system': 'Normalized cumulative distribution function for the spectrum',
-        'map': 'Recoil energies in keV',
-        'rate': 'Total event rate normalization events/tonne/year'
+    spectrum["coordinate_system"] = cdf.tolist()
+    spectrum["coordinate_name"] = "cdf"
+    spectrum["map"] = er.tolist()
+    spectrum["rate"] = nominal_rate
+    spectrum["annotation"] = {
+        "coordinate_system": "Normalized cumulative distribution function for the spectrum",
+        "map": "Recoil energies in keV",
+        "rate": "Total event rate normalization events/tonne/year",
     }
 
     return spectrum
+
 
 def get_yield(t, lower, median, upper, y_max=MAX_YIELD, y_min=MIN_YIELD):
     """
     Get yield based on yield parameter tly or tqy:
         yield = median + (upper - median) * t if t >= 0
-        yield = median + (lower - median) * t if t < 0    
+        yield = median + (lower - median) * t if t < 0
     Truncate the yield to be within y_max and y_min
     :param t: yield parameter tly or tqy
     :param lower: lower yield model dict with keys: coordinate_system, map (unit: quanta/keV)
@@ -85,29 +89,27 @@ def get_yield(t, lower, median, upper, y_max=MAX_YIELD, y_min=MIN_YIELD):
     :return: yield model dict with keys: coordinate_system, map (unit: quanta/keV)
     """
     # Check if the coordinate system is the same
-    assert median['coordinate_system'] == lower['coordinate_system']
-    assert median['coordinate_system'] == upper['coordinate_system']
-    
-    d_down = np.array(median['map']) - np.array(lower['map'])
-    d_up = np.array(upper['map']) - np.array(median['map'])
-    
+    assert median["coordinate_system"] == lower["coordinate_system"]
+    assert median["coordinate_system"] == upper["coordinate_system"]
+
+    d_down = np.array(median["map"]) - np.array(lower["map"])
+    d_up = np.array(upper["map"]) - np.array(median["map"])
+
     if t >= 0:
-        new_map = median['map'] + d_up * t
+        new_map = median["map"] + d_up * t
     elif t < 0:
-        new_map = median['map'] + d_down * t
+        new_map = median["map"] + d_down * t
 
     # Cap the yield by brutal force
-    new_map[new_map>=y_max] = y_max
-    new_map[new_map<=y_min] = y_min
+    new_map[new_map >= y_max] = y_max
+    new_map[new_map <= y_min] = y_min
 
-    return {
-        "coordinate_system": list(median['coordinate_system']),
-        "map": list(new_map)
-    }
+    return {"coordinate_system": list(median["coordinate_system"]), "map": list(new_map)}
+
 
 def load_default_yield_model():
     """Load default yield model based on YBe calibration median yields.
-    :return: yield model dict with keys: 
+    :return: yield model dict with keys:
         ly_lower, ly_median, ly_upper, qy_lower, qy_median, qy_upper.
     """
     ly_lower = load_json(os.path.join(JSON_PATH, "ly_ybe_model_lower.json"))
@@ -122,8 +124,9 @@ def load_default_yield_model():
         "ly_upper": ly_upper,
         "qy_lower": qy_lower,
         "qy_median": qy_median,
-        "qy_upper": qy_upper
+        "qy_upper": qy_upper,
     }
+
 
 def produce_templates(source_name, output_folder, spectrum, yield_model):
     """Produce templates for a specific source with customized spectrum or yield model, and save them to h5 files.
@@ -139,7 +142,7 @@ def produce_templates(source_name, output_folder, spectrum, yield_model):
     # Define the tly and tqy values.
     tly_values = [-3, -2, -1, 0, 1, 2, 3]
     tqy_values = [-3, -2, -1, 0, 1, 2, 3]
-    srs = ['sr0', 'sr1']
+    srs = ["sr0", "sr1"]
     total_iterations = len(tly_values) * len(tqy_values) * len(srs)
 
     with tqdm(total=total_iterations, desc=f"Producing Templates for {source_name}") as pbar:
@@ -147,18 +150,23 @@ def produce_templates(source_name, output_folder, spectrum, yield_model):
             for tqy in tqy_values:
                 # Get the customized yield model based on tly and tqy.
                 _customized_yield_model = dict()
-                _customized_yield_model['ly'] = get_yield(
-                    tly, yield_model['ly_lower'], yield_model['ly_median'], yield_model['ly_upper']
+                _customized_yield_model["ly"] = get_yield(
+                    tly, yield_model["ly_lower"], yield_model["ly_median"], yield_model["ly_upper"]
                 )
-                _customized_yield_model['qy'] = get_yield(
-                    tqy, yield_model['qy_lower'], yield_model['qy_median'], yield_model['qy_upper']
+                _customized_yield_model["qy"] = get_yield(
+                    tqy, yield_model["qy_lower"], yield_model["qy_median"], yield_model["qy_upper"]
                 )
                 template = Template().build_template(spectrum, _customized_yield_model)
                 # Save the templates to h5 files for both sr0 and sr1.
                 for sr in srs:
-                    filename = f"template_XENONnT_{sr}_{source_name}_cevns_tly_{tly}.0_tqy_{tqy}.0.h5"
-                    multihist_to_template([template[sr]], os.path.join(output_folder, filename), ["template"])
+                    filename = (
+                        f"template_XENONnT_{sr}_{source_name}_cevns_tly_{tly}.0_tqy_{tqy}.0.h5"
+                    )
+                    multihist_to_template(
+                        [template[sr]], os.path.join(output_folder, filename), ["template"]
+                    )
                     pbar.update(1)
+
 
 def get_statistical_model(config_path, confidence_level):
     """Get the statistical model based on the config file and confidence level.
@@ -168,48 +176,70 @@ def get_statistical_model(config_path, confidence_level):
     """
     config = load_yaml(config_path)
     model = BlueiceExtendedModel(
-        parameter_definition = config['parameter_definition'], 
-        likelihood_config = config['likelihood_config'],
-        confidence_level = confidence_level,
-        confidence_interval_kind = "central",
-        template_path = TEMPLATE_PATH
+        parameter_definition=config["parameter_definition"],
+        likelihood_config=config["likelihood_config"],
+        confidence_level=confidence_level,
+        confidence_interval_kind="central",
+        template_path=TEMPLATE_PATH,
     )
     model.data = REAL_DATA
 
     return model
 
+
 def produce_model_config(
-        signal_source_name, signal_folder_name, b8_source_name=None, b8_folder_name=None
-    ):
+    signal_source_name, signal_folder_name, b8_source_name=None, b8_folder_name=None
+):
     """Produce alea model config yaml file for a specific signal model and yield model.
     :param signal_source_name: signal source name, eg. "wimp_si_5" means 5 GeV WIMP SI.
     :param signal_folder_name: folder name containing the signal templates. eg. "wimp_si"
     :param b8_source_name: b8 source name, eg. "b8" means B8 neutrino.
     :param b8_folder_name: folder name containing the b8 templates. eg. "b8_linear".
     """
-    assert (b8_source_name is None) == (b8_folder_name is None), \
-        "b8 source name and template path must be both None if any of them is None, \
+    assert (b8_source_name is None) == (
+        b8_folder_name is None
+    ), "b8 source name and template path must be both None if any of them is None, \
             because both None is the only case that you will use the default YBe yield model"
-    
+
     # Load the base model config.
-    with open(importlib.resources.files("light_wimp_data_release.data") / "statistical_model_base.yaml", 'r') as file:
+    with open(
+        importlib.resources.files("light_wimp_data_release.data") / "statistical_model_base.yaml",
+        "r",
+    ) as file:
         yaml_data = yaml.safe_load(file)
     # Update the template folder.
-    yaml_data['likelihood_config']['template_folder'] = TEMPLATE_PATH
+    yaml_data["likelihood_config"]["template_folder"] = TEMPLATE_PATH
 
     # Loop over the two science runs.
     for sr in [0, 1]:
         # Update the signal and b8 template filenames.
-        signal_template_filename = signal_folder_name + "/template_XENONnT_sr%s_"%(sr) + signal_source_name + "_cevns_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5"
-        yaml_data['likelihood_config']['likelihood_terms'][sr]['sources'][0]['template_filename'] = signal_template_filename
+        signal_template_filename = (
+            signal_folder_name
+            + "/template_XENONnT_sr%s_" % (sr)
+            + signal_source_name
+            + "_cevns_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5"
+        )
+        yaml_data["likelihood_config"]["likelihood_terms"][sr]["sources"][0][
+            "template_filename"
+        ] = signal_template_filename
         # Update the b8 template filename if b8_source_name is provided, which means you are overriding the yield model.
         if b8_source_name is not None:
-            b8_template_filename = b8_folder_name + "/template_XENONnT_sr%s_"%(sr) + b8_source_name + "_cevns_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5"
-            yaml_data['likelihood_config']['likelihood_terms'][sr]['sources'][1]['template_filename'] = b8_template_filename
+            b8_template_filename = (
+                b8_folder_name
+                + "/template_XENONnT_sr%s_" % (sr)
+                + b8_source_name
+                + "_cevns_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5"
+            )
+            yaml_data["likelihood_config"]["likelihood_terms"][sr]["sources"][1][
+                "template_filename"
+            ] = b8_template_filename
 
     # Use signal folder name to decide the output file name.
-    output_file = str(importlib.resources.files("light_wimp_data_release.data") / f"{signal_folder_name}_statistical_model.yaml")
-    with open(output_file, 'w') as file:
+    output_file = str(
+        importlib.resources.files("light_wimp_data_release.data")
+        / f"{signal_folder_name}_statistical_model.yaml"
+    )
+    with open(output_file, "w") as file:
         yaml.safe_dump(yaml_data, file)
 
 
@@ -267,9 +297,7 @@ class Template:
         Build a return signal template for sr0 and sr1
         :return:
         """
-        inverse_cdf = interp1d(
-            signal_spectrum["coordinate_system"], signal_spectrum["map"]
-        )
+        inverse_cdf = interp1d(signal_spectrum["coordinate_system"], signal_spectrum["map"])
         samples = np.random.uniform(0, 1, SAMPLE_SIZE)
         er_samples = inverse_cdf(samples)
         roi_mask = (er_samples > E_R_MIN) & (er_samples < E_R_MAX)
@@ -357,9 +385,7 @@ class Template:
         ], "coordinate_name must be pdf or cdf"
         if signal_spectrum["coordinate_name"] == "pdf":
             warn(f"Convert signal spectrum from pdf to cdf")
-            x, cdf = self.pdf_to_cdf(
-                signal_spectrum["coordinate_system"], signal_spectrum["map"]
-            )
+            x, cdf = self.pdf_to_cdf(signal_spectrum["coordinate_system"], signal_spectrum["map"])
             signal_spectrum["coordinate_name"] = "cdf"
             signal_spectrum["coordinate_system"] = cdf
             signal_spectrum["map"] = x
@@ -377,7 +403,7 @@ class Template:
 
     def format_custom_yield_model(self, yield_model):
         """
-        Format the custom yield model. 
+        Format the custom yield model.
         :param yield_model:
         :return:
         """
@@ -393,11 +419,11 @@ class Template:
                 & (yield_model_dict[field](yield_model[field]["coordinate_system"]) <= 10)
             ), f"Yield model {field} must be between 0 and 10 quanta/keV"
         return yield_model_dict
-    
+
     def arrays_to_grid(self, arrs):
         """
-        Convert a list of n 1-dim arrays to an n+1-dim. array, 
+        Convert a list of n 1-dim arrays to an n+1-dim. array,
         where last dimension denotes coordinate values at point.
         :param arrs: list of 1-dim arrays
         """
-        return np.stack(np.meshgrid(*arrs, indexing='ij'), axis=-1)
+        return np.stack(np.meshgrid(*arrs, indexing="ij"), axis=-1)
