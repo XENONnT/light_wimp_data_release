@@ -9,6 +9,15 @@ from inference_interface import template_to_multihist
 from scipy.interpolate import interp1d
 from appletree.utils import load_json, integrate_midpoint, cumulative_integrate_midpoint
 from inference_interface import multihist_to_template
+import yaml
+import pickle
+from alea.utils import load_yaml
+from alea.models import BlueiceExtendedModel
+
+
+# Real data for SR0 and SR1 unblinding after all selections
+with open(importlib.resources.files("light_wimp_data_release.data") / "real_data.pkl", 'rb') as f:
+    REAL_DATA = pickle.load(f) 
 
 E_R_MIN = 0.51  # keV
 E_R_MAX = 5.0   # keV
@@ -18,6 +27,8 @@ BASIS_PATH = str(
 )
 JSON_PATH = importlib.resources.files("light_wimp_data_release.data") / "signal"
 JSON_PATH = Path(JSON_PATH)
+
+TEMPLATE_PATH = str(importlib.resources.files("light_wimp_data_release.data"))
 
 BASIS_E_R = np.concatenate(
     [[0.51, 0.6, 0.7, 0.8, 0.9], np.arange(1, 2, 0.25), np.arange(2, 5.5, 0.5)]
@@ -148,6 +159,58 @@ def produce_templates(source_name, output_folder, spectrum, yield_model):
                     filename = f"template_XENONnT_{sr}_{source_name}_cevns_tly_{tly}.0_tqy_{tqy}.0.h5"
                     multihist_to_template([template[sr]], os.path.join(output_folder, filename), ["template"])
                     pbar.update(1)
+
+def get_statistical_model(config_path, confidence_level):
+    """Get the statistical model based on the config file and confidence level.
+    :param config_path: path to the config file.
+    :param confidence_level: confidence level for the statistical model.
+    :return: alea statistical model.
+    """
+    config = load_yaml(config_path)
+    model = BlueiceExtendedModel(
+        parameter_definition = config['parameter_definition'], 
+        likelihood_config = config['likelihood_config'],
+        confidence_level = confidence_level,
+        confidence_interval_kind = "central",
+        template_path = TEMPLATE_PATH
+    )
+    model.data = REAL_DATA
+
+    return model
+
+def produce_model_config(
+        signal_source_name, signal_folder_name, b8_source_name=None, b8_folder_name=None
+    ):
+    """Produce alea model config yaml file for a specific signal model and yield model.
+    :param signal_source_name: signal source name, eg. "wimp_si_5" means 5 GeV WIMP SI.
+    :param signal_folder_name: folder name containing the signal templates. eg. "wimp_si"
+    :param b8_source_name: b8 source name, eg. "b8" means B8 neutrino.
+    :param b8_folder_name: folder name containing the b8 templates. eg. "b8_linear".
+    """
+    assert (b8_source_name is None) == (b8_folder_name is None), \
+        "b8 source name and template path must be both None if any of them is None, \
+            because both None is the only case that you will use the default YBe yield model"
+    
+    # Load the base model config.
+    with open(importlib.resources.files("light_wimp_data_release.data") / "statistical_model_base.yaml", 'r') as file:
+        yaml_data = yaml.safe_load(file)
+    # Update the template folder.
+    yaml_data['likelihood_config']['template_folder'] = TEMPLATE_PATH
+
+    # Loop over the two science runs.
+    for sr in [0, 1]:
+        # Update the signal and b8 template filenames.
+        signal_template_filename = signal_folder_name + "/template_XENONnT_sr%s_"%(sr) + signal_source_name + "_cevns_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5"
+        yaml_data['likelihood_config']['likelihood_terms'][sr]['sources'][0]['template_filename'] = signal_template_filename
+        # Update the b8 template filename if b8_source_name is provided, which means you are overriding the yield model.
+        if b8_source_name is not None:
+            b8_template_filename = b8_folder_name + "/template_XENONnT_sr%s_"%(sr) + b8_source_name + "_cevns_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5"
+            yaml_data['likelihood_config']['likelihood_terms'][sr]['sources'][1]['template_filename'] = b8_template_filename
+
+    # Use signal folder name to decide the output file name.
+    output_file = str(importlib.resources.files("light_wimp_data_release.data") / f"{signal_folder_name}_statistical_model.yaml")
+    with open(output_file, 'w') as file:
+        yaml.safe_dump(yaml_data, file)
 
 
 class Template:
