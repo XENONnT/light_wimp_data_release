@@ -2,7 +2,7 @@
 
 XENON collaboration, 2024
 
-Contact: [Lanqing Yuan](yuanlq@uchicago.edu) and [Shenyang Shi](ss6109@columbia.edu)
+Contact: Lanqing Yuan (yuanlq@uchicago.edu) and Shenyang Shi (ss6109@columbia.edu)
 
 ## Scope 
 
