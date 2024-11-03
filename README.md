@@ -16,7 +16,7 @@ Run `pip install -e ./` to install the essential dependencies.
 
 ## Contents
 
-This data release are structued as follows:
+This package is structued as follows:
 
   * `notebooks` contains pedagogical notebooks helping you recasting our results.
   * `lightwimp_data_release/data` contains the templates and signal spectrum, with the following catagories:
