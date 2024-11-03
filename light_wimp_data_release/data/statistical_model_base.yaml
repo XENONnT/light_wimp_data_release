@@ -11,11 +11,6 @@ parameter_definition:
     fittable: false
     description: SR1 livetime
 
-  wimp_mass:
-    nominal_value: 6
-    fittable: false
-    description: WIMP mass in GeV/c^2
-
   signal_efficiency:
     nominal_value: 1.0
     ptype: efficiency
@@ -154,7 +149,7 @@ parameter_definition:
     description: Charge yield morpher
 
 likelihood_config:
-  template_folder: "/home/yuanlq/software/light_wimp_data_release/light_wimp_data_release/data"
+  template_folder: TBD
   likelihood_terms:
     - name: SR0
       default_source_class: alea.template_source.TemplateSource
@@ -173,14 +168,12 @@ likelihood_config:
         parameters:
           - signal_efficiency
           - wimp_rate_multiplier
-          - wimp_mass
           - t_ly
           - t_qy
         named_parameters:
-          - wimp_mass
           - t_ly
           - t_qy
-        template_filename: generated_dm/template_XENONnT_sr0_fermionic_dm_{wimp_mass:d}_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5
+        template_filename: TBD
         apply_efficiency: True
         efficiency_name: signal_efficiency
 
@@ -194,7 +187,7 @@ likelihood_config:
         named_parameters:
           - t_ly
           - t_qy
-        template_filename: generated_b8/template_XENONnT_sr0_b8_6_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5
+        template_filename: b8/template_XENONnT_sr0_b8_cevns_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5
         apply_efficiency: True
         efficiency_name: signal_efficiency
 
@@ -238,14 +231,12 @@ likelihood_config:
         parameters:
           - signal_efficiency
           - wimp_rate_multiplier
-          - wimp_mass
           - t_ly
           - t_qy
         named_parameters:
-          - wimp_mass
           - t_ly
           - t_qy
-        template_filename: generated_dm/template_XENONnT_sr1_fermionic_dm_{wimp_mass:d}_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5
+        template_filename: TBD
         apply_efficiency: True
         efficiency_name: signal_efficiency
 
@@ -259,7 +250,7 @@ likelihood_config:
         named_parameters:
           - t_ly
           - t_qy
-        template_filename: generated_b8/template_XENONnT_sr1_b8_6_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5
+        template_filename: b8/template_XENONnT_sr1_b8_cevns_tly_{t_ly:.1f}_tqy_{t_qy:.1f}.h5
         apply_efficiency: True
         efficiency_name: signal_efficiency
 
