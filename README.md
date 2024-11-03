@@ -19,7 +19,7 @@ Run `pip install -e ./` to install the essential dependencies.
 This package is structued as follows:
 
   * `notebooks` contains pedagogical notebooks helping you recasting our results.
-  * `lightwimp_data_release/data` contains the templates and signal spectrum, with the following catagories:
+  * `lightwimp_data_release/data` contains the templates and signal spectrum to be used in recasting our results, with the following catagories:
     * Mono-enegetic simulations for each possible light yield and charge yield combination.
     * Background used in the analysis.
       * `ac`: Accndental coincidence background.
