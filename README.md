@@ -27,4 +27,4 @@ This data release are structued as follows:
       * `wimp_si`: Spin-independent WIMP signal.
       * `wimp_si_n_1/2/m2`: Momemtum dependent dark matter.
       * `mirror_dm`: Mirror dark matter (dark oxygen).
-  * `lightwimp_data_release/limits` contains the data points in FIG 3 of the [paper]((https://arxiv.org/abs/2409.17868)).
+  * `lightwimp_data_release/limits` contains the data points in FIG 3 of the [paper](https://arxiv.org/abs/2409.17868).
