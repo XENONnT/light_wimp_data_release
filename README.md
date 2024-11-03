@@ -5,7 +5,7 @@ XENON collaboration, 2024
 ## Scope 
 
  * This release contains data from the analysis decribed in the paper [First Search for Light Dark Matter in the Neutrino Fog with XENONnT](https://arxiv.org/abs/2409.17868).
- * A tool for recasting our results, to get limits on customized new physics, or to reinterpret our results with a different yield model. 
+ * A tool for recasting our results, to get limits on customized new physics, or to reinterpret our results by getting limits on a considered dark matter model but with a different yield model. 
 
 
 ## Installation
