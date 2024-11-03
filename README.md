@@ -2,6 +2,8 @@
 
 XENON collaboration, 2024
 
+Contact: Lanqing Yuan (yuanlq@uchicago.edu) and [Shenyang Shi](ss6109@columbia.edu)
+
 ## Scope 
 
  * This release contains data from the analysis decribed in the paper [First Search for Light Dark Matter in the Neutrino Fog with XENONnT](https://arxiv.org/abs/2409.17868).
