@@ -6,7 +6,7 @@ Contact: Lanqing Yuan (yuanlq@uchicago.edu) and Shenyang Shi (ss6109@columbia.ed
 
 ## Scope 
 
- * This release contains data from the analysis decribed in the paper [First Search for Light Dark Matter in the Neutrino Fog with XENONnT](https://arxiv.org/abs/2409.17868).
+ * This release contains data from the analysis, and the final results decribed in the paper [First Search for Light Dark Matter in the Neutrino Fog with XENONnT](https://arxiv.org/abs/2409.17868).
  * A tool for recasting our results, to get limits on customized new physics, or to reinterpret our results by getting limits on a considered dark matter model but with a different yield model. 
 
 
@@ -18,6 +18,7 @@ Run `pip install -e ./` to install the essential dependencies.
 
 This data release are structued as follows:
 
+  * `notebooks` contains pedagogical notebooks helping you recasting our results.
   * `lightwimp_data_release/data` contains the templates and signal spectrum, with the following catagories:
     * Mono-enegetic simulations for each possible light yield and charge yield combination.
     * Background used in the analysis.
