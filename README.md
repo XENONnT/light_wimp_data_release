@@ -1,5 +1,7 @@
 # XENONnT Light WIMP data release
 
+Data release and tools for data re-interpretation for [XENONnT's first search for light dark matter](https://arxiv.org/abs/2409.17868).
+
 XENON collaboration, 2024
 
 Contact: Lanqing Yuan (yuanlq@uchicago.edu) and Shenyang Shi (ss6109@columbia.edu)
