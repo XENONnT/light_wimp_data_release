@@ -2,8 +2,6 @@
 
 Data release and tools for data re-interpretation for [XENONnT's first search for light dark matter](https://arxiv.org/abs/2409.17868).
 
-THIS PACKAGE IS UNDER BETA TEST, PLEASE DO NOT USE UNTIL THE PAPER IS ACCEPTED.
-
 XENON collaboration, 2024
 
 Contact: Lanqing Yuan (yuanlq@uchicago.edu) and Shenyang Shi (ss6109@columbia.edu)
@@ -13,6 +11,22 @@ Contact: Lanqing Yuan (yuanlq@uchicago.edu) and Shenyang Shi (ss6109@columbia.ed
  * This release contains data from the analysis, and the final results decribed in the paper [First Search for Light Dark Matter in the Neutrino Fog with XENONnT](https://arxiv.org/abs/2409.17868).
  * A tool for recasting our results, to get limits on customized new physics, or to reinterpret our results by getting limits on a considered dark matter model but with a different yield model. 
 
+## Citation
+
+Please cite the paper by
+```
+@article{XENON:2024hup,
+    author = "Aprile, E. and others",
+    collaboration = "XENON",
+    title = "{First Search for Light Dark Matter in the Neutrino Fog with XENONnT}",
+    eprint = "2409.17868",
+    archivePrefix = "arXiv",
+    primaryClass = "hep-ex",
+    month = "9",
+    year = "2024"
+}
+```
+and then cite this package from Zenado. 
 
 ## Installation
 
