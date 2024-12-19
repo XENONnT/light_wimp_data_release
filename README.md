@@ -1,4 +1,5 @@
 # XENONnT Light WIMP data release
+[![DOI](https://zenodo.org/badge/839511553.svg)](https://doi.org/10.5281/zenodo.14522706)
 
 Data release and tools for data re-interpretation for [XENONnT's first search for light dark matter](https://arxiv.org/abs/2409.17868).
 
