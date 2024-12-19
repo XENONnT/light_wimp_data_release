@@ -26,7 +26,7 @@ Please cite the paper by
     year = "2024"
 }
 ```
-and then cite this package from Zenado. 
+and then cite this package from Zenodo. 
 
 ## Installation
 
