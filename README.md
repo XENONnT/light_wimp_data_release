@@ -23,8 +23,12 @@ Please cite the paper by
     eprint = "2409.17868",
     archivePrefix = "arXiv",
     primaryClass = "hep-ex",
-    month = "9",
-    year = "2024"
+    doi = "10.1103/PhysRevLett.134.111802",
+    journal = "Phys. Rev. Lett.",
+    volume = "134",
+    number = "11",
+    pages = "111802",
+    year = "2025"
 }
 ```
 and then cite this package from Zenodo. 
